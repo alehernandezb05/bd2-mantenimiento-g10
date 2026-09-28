@@ -1,4 +1,10 @@
 USE aa_mantenimiento;
+DROP TABLE IF EXISTS orden_repuesto;
+DROP TABLE IF EXISTS orden_trabajo;
+DROP TABLE IF EXISTS discrepancia_tecnica;
+DROP TABLE IF EXISTS inspeccion;
+DROP TABLE IF EXISTS inventario_repuesto;
+DROP TABLE IF EXISTS componente;
 
 CREATE TABLE componente (
     id_componente BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -44,7 +50,6 @@ CREATE TABLE discrepancia_tecnica (
     codigo_discrepancia CHAR(10) NOT NULL UNIQUE,
     id_inspeccion BIGINT UNSIGNED NULL,
     matricula_aeronave VARCHAR(10) NOT NULL,
-    descripcion_falla TEXT NOT NULL,
     severidad CHAR(1) NOT NULL,
     fecha_reporte DATETIME NOT NULL,
     estado VARCHAR(20) NOT NULL DEFAULT 'ABIERTA',
@@ -54,6 +59,7 @@ CREATE TABLE discrepancia_tecnica (
     CONSTRAINT ck_discrepancia_estado CHECK (estado IN ('ABIERTA', 'EN_REVISION', 'RESUELTA', 'DIFERIDA'))
 );
 
+
 CREATE TABLE orden_trabajo (
     id_orden BIGINT UNSIGNED PRIMARY KEY,
     codigo_orden CHAR(12) NOT NULL UNIQUE,
@@ -61,6 +67,8 @@ CREATE TABLE orden_trabajo (
     horas_hombre NUMERIC(6,2) NOT NULL,
     prioridad CHAR(1) NOT NULL,
     estado VARCHAR(20) NOT NULL,
+    
+    
     matricula_aeronave VARCHAR(10) NOT NULL,
     fecha_cierre DATE NULL,
     id_discrepancia BIGINT UNSIGNED NULL,
