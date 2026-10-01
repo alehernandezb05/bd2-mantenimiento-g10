@@ -11,3 +11,11 @@ CREATE FULLTEXT INDEX ft_repuesto_descripcion ON inventario_repuesto (descripcio
 CREATE FULLTEXT INDEX ft_componente_nombre ON componente (nombre_componente);
 
 ANALYZE TABLE orden_trabajo, inspeccion, discrepancia_tecnica, inventario_repuesto, componente;
+
+-- 3.2 Show index
+
+-- SHOW INDEX FROM orden_trabajo;
+-- SHOW INDEX FROM inspeccion;
+-- SHOW INDEX FROM discrepancia_tecnica;
+-- SHOW INDEX FROM inventario_repuesto;
+-- SHOW INDEX FROM componente;
