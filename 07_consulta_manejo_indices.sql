@@ -29,3 +29,8 @@ EXPLAIN ANALYZE SELECT * FROM componente
 WHERE nombre_componente LIKE '%turbina%';
 EXPLAIN ANALYZE SELECT * FROM componente
 WHERE MATCH(nombre_componente) AGAINST('turbina');
+
+EXPLAIN ANALYZE SELECT id_orden, cantidad_utilizada FROM orden_repuesto IGNORE INDEX (idx_orden_repuesto)
+WHERE id_repuesto = 269;
+EXPLAIN ANALYZE SELECT id_orden, cantidad_utilizada FROM orden_repuesto 
+WHERE id_repuesto = 269;
