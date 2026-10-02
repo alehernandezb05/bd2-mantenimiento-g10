@@ -60,6 +60,7 @@ CREATE TABLE `componente` (
   `estado` varchar(20) NOT NULL DEFAULT 'OPERATIVO',
   PRIMARY KEY (`id_componente`),
   UNIQUE KEY `numero_serie` (`numero_serie`),
+  FULLTEXT KEY `ft_componente_nombre` (`nombre_componente`),
   CONSTRAINT `ck_componente_estado` CHECK ((`estado` in (_utf8mb4'OPERATIVO',_utf8mb4'EN_REPARACION',_utf8mb4'INSPECCION',_utf8mb4'DESCARTADO'))),
   CONSTRAINT `ck_componente_horas` CHECK ((`horas_acumuladas` >= 0))
 ) ENGINE=InnoDB AUTO_INCREMENT=501 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -93,6 +94,7 @@ CREATE TABLE `discrepancia_tecnica` (
   PRIMARY KEY (`id_discrepancia`),
   UNIQUE KEY `codigo_discrepancia` (`codigo_discrepancia`),
   KEY `fk_discrepancia_inspeccion` (`id_inspeccion`),
+  KEY `idx_discrepancia_estado_severidad` (`estado`,`severidad`),
   CONSTRAINT `fk_discrepancia_inspeccion` FOREIGN KEY (`id_inspeccion`) REFERENCES `inspeccion` (`id_inspeccion`),
   CONSTRAINT `ck_discrepancia_estado` CHECK ((`estado` in (_utf8mb4'ABIERTA',_utf8mb4'EN_REVISION',_utf8mb4'RESUELTA',_utf8mb4'DIFERIDA'))),
   CONSTRAINT `ck_discrepancia_severidad` CHECK ((`severidad` in (_utf8mb4'1',_utf8mb4'2',_utf8mb4'3',_utf8mb4'4')))
@@ -153,6 +155,7 @@ CREATE TABLE `inspeccion` (
   PRIMARY KEY (`id_inspeccion`),
   UNIQUE KEY `codigo_inspeccion` (`codigo_inspeccion`),
   KEY `fk_inspeccion_aeropuerto` (`id_aeropuerto`),
+  KEY `idx_inspeccion_matricula_fecha` (`matricula_aeronave`,`fecha_inspeccion`),
   CONSTRAINT `fk_inspeccion_aeropuerto` FOREIGN KEY (`id_aeropuerto`) REFERENCES `aeropuerto` (`id_aeropuerto`),
   CONSTRAINT `ck_inspeccion_resultado` CHECK ((`resultado` in (_utf8mb4'APROBADO',_utf8mb4'CON_DISCREPANCIA',_utf8mb4'RECHAZADO'))),
   CONSTRAINT `ck_inspeccion_tipo` CHECK ((`tipo_inspeccion` in (_utf8mb4'DIARIA',_utf8mb4'PREFLIGHT',_utf8mb4'CHECK_A',_utf8mb4'CHECK_B',_utf8mb4'CHECK_C',_utf8mb4'CHECK_D')))
@@ -187,6 +190,7 @@ CREATE TABLE `inventario_repuesto` (
   PRIMARY KEY (`id_repuesto`),
   UNIQUE KEY `codigo_repuesto` (`codigo_repuesto`),
   KEY `fk_inventario_aeropuerto` (`id_aeropuerto_bodega`),
+  FULLTEXT KEY `ft_repuesto_descripcion` (`descripcion`),
   CONSTRAINT `fk_inventario_aeropuerto` FOREIGN KEY (`id_aeropuerto_bodega`) REFERENCES `aeropuerto` (`id_aeropuerto`),
   CONSTRAINT `ck_inventario_costo` CHECK ((`costo_unitario` >= 0))
 ) ENGINE=InnoDB AUTO_INCREMENT=301 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -214,7 +218,7 @@ CREATE TABLE `orden_repuesto` (
   `id_repuesto` bigint unsigned NOT NULL,
   `cantidad_utilizada` int unsigned NOT NULL,
   PRIMARY KEY (`id_orden`,`id_repuesto`),
-  KEY `fk_or_repuesto` (`id_repuesto`),
+  KEY `idx_orden_repuesto` (`id_repuesto`),
   CONSTRAINT `fk_or_orden` FOREIGN KEY (`id_orden`) REFERENCES `orden_trabajo` (`id_orden`),
   CONSTRAINT `fk_or_repuesto` FOREIGN KEY (`id_repuesto`) REFERENCES `inventario_repuesto` (`id_repuesto`),
   CONSTRAINT `ck_orden_repuesto_cantidad` CHECK ((`cantidad_utilizada` > 0))
@@ -253,6 +257,8 @@ CREATE TABLE `orden_trabajo` (
   UNIQUE KEY `codigo_orden` (`codigo_orden`),
   KEY `fk_orden_discrepancia` (`id_discrepancia`),
   KEY `fk_orden_componente` (`id_componente`),
+  KEY `idx_orden_estado_prioridad` (`estado`,`prioridad`),
+  KEY `idx_orden_fecha_apertura` (`fecha_apertura`),
   CONSTRAINT `fk_orden_componente` FOREIGN KEY (`id_componente`) REFERENCES `componente` (`id_componente`),
   CONSTRAINT `fk_orden_discrepancia` FOREIGN KEY (`id_discrepancia`) REFERENCES `discrepancia_tecnica` (`id_discrepancia`),
   CONSTRAINT `ck_orden_estado` CHECK ((`estado` in (_utf8mb4'ABIERTA',_utf8mb4'EN_PROCESO',_utf8mb4'CERRADA',_utf8mb4'PENDIENTE_REPUESTO'))),
@@ -299,10 +305,6 @@ INSERT INTO `region` VALUES (2,'CENTRAL'),(1,'ESTE'),(3,'OESTE');
 UNLOCK TABLES;
 
 --
--- Dumping events for database 'aa_mantenimiento'
---
-
---
 -- Dumping routines for database 'aa_mantenimiento'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -315,4 +317,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-10-01 20:01:20
+-- Dump completed on 2026-10-02 17:56:01
