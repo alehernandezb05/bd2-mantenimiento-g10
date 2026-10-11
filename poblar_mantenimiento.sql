@@ -1,5 +1,6 @@
 USE aa_mantenimiento;
-SET FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS = 1;
+START TRANSACTION;
 -- Poblar componente
 INSERT INTO componente (id_componente, numero_serie, numero_parte, nombre_componente, horas_acumuladas, ciclos_acumulados, estado) VALUES (1, 'SN-GI-18921', 'PN-22151', 'Turbina CFM56', 11317.31, 62, 'DESCARTADO');
 INSERT INTO componente (id_componente, numero_serie, numero_parte, nombre_componente, horas_acumuladas, ciclos_acumulados, estado) VALUES (2, 'SN-HO-73517', 'PN-11774', 'Actuador de Timón', 7879.62, 4825, 'OPERATIVO');
@@ -12810,4 +12811,4 @@ INSERT INTO orden_trabajo (id_orden, codigo_orden, fecha_apertura, horas_hombre,
 INSERT INTO orden_trabajo (id_orden, codigo_orden, fecha_apertura, horas_hombre, prioridad, estado, matricula_aeronave, fecha_cierre, id_discrepancia, id_componente) VALUES (5499, 'OT25-005499', '2026-03-25', 91.72, 'A', 'ABIERTA', 'N516AA', NULL, 2816, 397);
 INSERT INTO orden_trabajo (id_orden, codigo_orden, fecha_apertura, horas_hombre, prioridad, estado, matricula_aeronave, fecha_cierre, id_discrepancia, id_componente) VALUES (5500, 'OT25-005500', '2025-12-19', 27.36, 'C', 'CERRADA', 'N102AA', '2025-12-27', 3437, 378);
 
-SET FOREIGN_KEY_CHECKS = 1;
+COMMIT;
