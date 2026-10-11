@@ -1,22 +1,23 @@
-USE aa_mantenimiento;
+SET search_path TO aa_mantenimiento, public;
 
--- indices btree
-CREATE INDEX idx_orden_estado_prioridad ON orden_trabajo (estado, prioridad);
-CREATE INDEX idx_orden_fecha_apertura ON orden_trabajo (fecha_apertura);
-CREATE INDEX idx_inspeccion_matricula_fecha ON inspeccion (matricula_aeronave, fecha_inspeccion);
-CREATE INDEX idx_discrepancia_estado_severidad ON discrepancia_tecnica (estado, severidad);
-CREATE INDEX idx_orden_repuesto ON orden_repuesto (id_repuesto);
+-- 1. Índices B-tree en tablas distribuidas
+CREATE INDEX IF NOT EXISTS idx_orden_trabajo_estado ON orden_trabajo (estado);
+CREATE INDEX IF NOT EXISTS idx_orden_trabajo_fecha ON orden_trabajo (fecha_apertura);
+CREATE INDEX IF NOT EXISTS idx_orden_trabajo_aeronave ON orden_trabajo (matricula_aeronave);
 
--- indices fulltext
-CREATE FULLTEXT INDEX ft_repuesto_descripcion ON inventario_repuesto (descripcion);
-CREATE FULLTEXT INDEX ft_componente_nombre ON componente (nombre_componente);
+CREATE INDEX IF NOT EXISTS idx_inspeccion_fecha ON inspeccion (fecha_inspeccion);
+CREATE INDEX IF NOT EXISTS idx_inspeccion_aeronave ON inspeccion (matricula_aeronave);
 
-ANALYZE TABLE orden_trabajo, inspeccion, discrepancia_tecnica, inventario_repuesto, componente, orden_repuesto;
+CREATE INDEX IF NOT EXISTS idx_discrepancia_severidad ON discrepancia_tecnica (severidad);
+CREATE INDEX IF NOT EXISTS idx_discrepancia_estado ON discrepancia_tecnica (estado);
 
--- 3.2 Show index
+-- 2. Búsqueda Full Text en PostgreSQL (GIN con tsvector)
+CREATE INDEX IF NOT EXISTS ft_repuesto_descripcion ON inventario_repuesto USING gin(to_tsvector('spanish', descripcion));
+CREATE INDEX IF NOT EXISTS ft_componente_nombre ON componente USING gin(to_tsvector('spanish', nombre_componente));
 
--- SHOW INDEX FROM orden_trabajo;
--- SHOW INDEX FROM inspeccion;
--- SHOW INDEX FROM discrepancia_tecnica;
--- SHOW INDEX FROM inventario_repuesto;
--- SHOW INDEX FROM componente;
+-- 3. Actualización de estadísticas para el optimizador distribuido
+ANALYZE orden_trabajo;
+ANALYZE inspeccion;
+ANALYZE discrepancia_tecnica;
+ANALYZE inventario_repuesto;
+ANALYZE componente;

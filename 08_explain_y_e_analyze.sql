@@ -1,3 +1,4 @@
+SET search_path TO aa_mantenimiento, public;
 -- Con EXPLAIN
 EXPLAIN 
 SELECT * 
