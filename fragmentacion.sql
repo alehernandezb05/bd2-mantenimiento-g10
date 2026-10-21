@@ -83,14 +83,12 @@ ALTER TABLE aa_mantenimiento.hub ADD PRIMARY KEY (id_hub, id_aeropuerto);
 -- Para restaurar la base de datos, solo debería hacer falta ejecutar esta parte
 
 
--- Tablas replicadas
+
 SELECT create_reference_table('region');
 
--- Distribuir la tabla raíz
 SELECT create_distributed_table('aeropuerto', 'id_aeropuerto');
 SELECT create_distributed_table('hub', 'id_aeropuerto');
 
--- Distribuir tablas operacionales co-ubicadas con aeropuerto
 SELECT create_distributed_table('inspeccion', 'id_aeropuerto');
 SELECT create_distributed_table('discrepancia_tecnica', 'id_aeropuerto');
 SELECT create_distributed_table('orden_trabajo', 'id_aeropuerto');
